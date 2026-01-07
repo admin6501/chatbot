@@ -114,28 +114,23 @@ else
     fi
 fi
 
-# بررسی و نصب python3-venv
-print_info "بررسی python3-venv..."
+# نصب python3-venv (بدون بررسی - همیشه نصب می‌کنیم)
+print_info "نصب python3-venv..."
 if [ "$PKG_MANAGER" == "apt-get" ]; then
-    # بررسی اینکه آیا venv کار می‌کند
-    if ! python3 -m venv --help &> /dev/null 2>&1; then
-        print_warn "python3-venv یافت نشد. در حال نصب..."
-        sudo apt-get update
-        # تلاش برای نصب نسخه‌های مختلف
-        sudo apt-get install -y python3-venv 2>/dev/null || \
-        sudo apt-get install -y python3.10-venv 2>/dev/null || \
-        sudo apt-get install -y python3.11-venv 2>/dev/null || \
-        sudo apt-get install -y python3.12-venv 2>/dev/null || \
-        print_error "نصب python3-venv با مشکل مواجه شد. لطفاً دستی نصب کنید: sudo apt install python3-venv"
-        print_msg "python3-venv نصب شد"
-    else
-        print_msg "python3-venv نصب است"
-    fi
+    # پیدا کردن نسخه پایتون
+    PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+    print_info "نسخه پایتون: $PYTHON_VERSION"
+    
+    sudo apt-get update
+    sudo apt-get install -y python${PYTHON_VERSION}-venv || \
+    sudo apt-get install -y python3-venv || \
+    sudo apt-get install -y python3.10-venv || \
+    sudo apt-get install -y python3.11-venv || \
+    sudo apt-get install -y python3.12-venv
+    print_msg "python3-venv نصب شد"
 elif [ "$PKG_MANAGER" == "yum" ]; then
-    if ! python3 -m venv --help &> /dev/null 2>&1; then
-        print_warn "python3-venv یافت نشد. در حال نصب..."
-        sudo yum install -y python3-virtualenv 2>/dev/null || print_warn "لطفاً python3-venv را دستی نصب کنید"
-    fi
+    sudo yum install -y python3-virtualenv
+    print_msg "python3-virtualenv نصب شد"
 fi
 
 # ==================== دریافت اطلاعات ====================
