@@ -114,6 +114,22 @@ else
     fi
 fi
 
+# بررسی و نصب python3-venv
+print_info "بررسی python3-venv..."
+if [ "$PKG_MANAGER" == "apt-get" ]; then
+    # دریافت نسخه پایتون
+    PYTHON_VER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+    
+    # بررسی اینکه آیا venv کار می‌کند
+    if ! python3 -m venv --help &> /dev/null; then
+        print_warn "python3-venv یافت نشد. در حال نصب..."
+        sudo apt-get update
+        sudo apt-get install -y python3-venv python3.${PYTHON_VER##*.}-venv 2>/dev/null || sudo apt-get install -y python3-venv
+    else
+        print_msg "python3-venv نصب است"
+    fi
+fi
+
 # ==================== دریافت اطلاعات ====================
 
 print_header "دریافت اطلاعات / Getting Information"
